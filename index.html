@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to PNG Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            margin: 50px auto;
+            max-width: 600px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        input[type="file"] {
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #output {
+            margin-top: 20px;
+        }
+        a {
+            color: #007BFF;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Convert Image to PNG</h1>
+        <p>Select an image (JPG, JPEG, etc.) to convert it into PNG format.</p>
+        <form id="imageForm">
+            <input type="file" id="fileInput" accept="image/*" required>
+            <button type="submit">Convert</button>
+        </form>
+        <div id="output"></div>
+    </div>
+    <script>
+        document.getElementById('imageForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select an image to convert.');
+                return;
+            }
+
+            const reader = new FileReader();
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+
+            reader.onload = function () {
+                img.src = reader.result;
+            };
+
+            img.onload = function () {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                canvas.toBlob(function (blob) {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = file.name.replace(/\.[^/.]+$/, "") + ".png";
+                    link.textContent = "Download your PNG image";
+                    link.style.display = "block";
+                    document.getElementById('output').innerHTML = "";
+                    document.getElementById('output').appendChild(link);
+                }, 'image/png');
+            };
+
+            reader.readAsDataURL(file);
+        });
+    </script>
+</body>
+</html>
